@@ -7,5 +7,15 @@ import { Component } from '@angular/core';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+logout() {
+throw new Error('Method not implemented.');
+}
+Building: any;
+loginWithFacebook() {
+throw new Error('Method not implemented.');
+}
+loginWithGoogle() {
+throw new Error('Method not implemented.');
+}
 
 }

@@ -1,12 +1,22 @@
+// src/app/app.component.ts
+
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  standalone: true,
+  imports: [RouterModule], // Required for <router-outlet>
+  template: `
+    <div class="app-container">
+      <router-outlet></router-outlet>
+    </div>
+  `,
+  styles: [`
+    .app-container {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+  `]
 })
-export class AppComponent {
-  title = 'building-permission-frontend';
-}
+export class AppComponent {}

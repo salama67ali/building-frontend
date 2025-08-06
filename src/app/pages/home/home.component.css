@@ -1,0 +1,44 @@
+ 
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 200px;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+    .sidebar a {
+      display: block;
+      margin: 10px 0;
+    }
+    .content {
+      flex-grow: 1;
+      padding: 40px;
+    }
+    .home-header {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+    }
+    .home-content {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        padding: 40px;
+        margin-top: 20px;
+    }
+    .home-content h2 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+    .home-content p {
+        color: #555;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    

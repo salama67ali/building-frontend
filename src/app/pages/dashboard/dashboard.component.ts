@@ -1,13 +1,15 @@
+// dashboard.component.ts
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  templateUrl: './dashboard.component.html'
+  imports: [CommonModule, RouterModule],
+  template: `
+    <h1>Welcome to the Dashboard</h1>
+    <button routerLink="/">Back to Home</button>
+  `
 })
-export class DashboardComponent {
-  title = 'Dashboard';
-}
+export class DashboardComponent {}

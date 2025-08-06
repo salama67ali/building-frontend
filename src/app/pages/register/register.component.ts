@@ -1,42 +1,38 @@
+// register.component.ts
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
-
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.component.html',
+  standalone: true,
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  template: `
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <input formControlName="username" placeholder="Username">
+      <input type="password" formControlName="password" placeholder="Password">
+      <select formControlName="role">
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+      <button type="submit">Register</button>
+    </form>
+  `
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-  successMessage = '';
-  errorMessage = '';
+  roles = ['Engineer', 'Consultant', 'Owner', 'Government'];
 
-  constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router
-  ) {
+  constructor(private fb: FormBuilder) {
     this.registerForm = this.fb.group({
-      name: [''],
-      email: [''],
-      password: [''],
-      role: ['OWNER']
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      role: ['', Validators.required]
     });
   }
 
-  onSubmit(): void {
-    this.auth.register(this.registerForm.value).subscribe({
-      next: (res: any) => {
-        console.log('Registration success', res);
-        this.successMessage = 'Registration successful!';
-        this.router.navigate(['/login']);
-      },
-      error: (err: any) => {
-        console.error('Registration failed', err);
-        this.errorMessage = 'Something went wrong';
-      },
-    });
+  onSubmit() {
+    if (this.registerForm.invalid) return;
+    console.log('Registered:', this.registerForm.value);
   }
 }

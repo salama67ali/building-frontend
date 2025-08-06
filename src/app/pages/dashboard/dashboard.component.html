@@ -1,4 +1,33 @@
 <div class="dashboard">
-  <h1>{{ title }}</h1>
+  <h1>Building Permissions Management</h1>
   <p>This is the landing page after successful login.</p>
 </div>
+<app-navbar></app-navbar>
+<!-- rest of your dashboard content -->
+<div class="dashboard-content">
+  <h2>Welcome to the Building Permissions Dashboard</h2>
+  <p>Here you can manage your building permissions and view your application status.</p>
+  <!-- Add more dashboard features here -->
+  <div class="dashboard-features">
+    <div class="feature-card">
+      <h3>View Applications</h3>
+      <p>Check the status of your building applications.</p>
+      <button routerLink="/applications" class="btn-feature">View Applications</button>
+    </div>
+    <div class="feature-card">
+      <h3>Submit New Application</h3>
+      <p>Start a new building permission application.</p>
+      <button routerLink="/new-application" class="btn-feature">New Application</button>
+    </div>
+    <div class="feature-card">
+      <h3>Contact Support</h3>
+      <p>If you need help, reach out to our support team.</p>
+      <button routerLink="/support" class="btn-feature">Contact Support</button>
+    </div>
+  </div>
+</div>
+<div class="dashboard-footer">
+  <p>&copy; 2025 Building Permission System</p>
+  <p>Need help? <a routerLink="/support">Contact Support</a></p>
+</div>
+

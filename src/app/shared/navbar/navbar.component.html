@@ -1,1 +1,23 @@
-<p>navbar works!</p>
+<nav>
+  <a routerLink="/dashboard">Dashboard</a>
+  <a routerLink="/gis-assessment">GIS</a>
+  <a routerLink="/register-project">Register Project</a>
+  <a routerLink="/profile">Profile</a>
+  <a (click)="logout()">Logout</a>
+</nav>
+<div class="navbar">
+  <div class="navbar-brand">
+    <a routerLink="/dashboard">Building Permission System</a>
+  </div>
+  <div class="navbar-links">
+    <a routerLink="/dashboard">Dashboard</a>
+    <a routerLink="/gis-assessment">GIS Assessment</a>
+    <a routerLink="/register-project">Register Project</a>
+    <a routerLink="/profile">Profile</a>
+    <a (click)="logout()">Logout</a>
+  </div>
+</div>
+<div class="navbar-footer">
+  <p>&copy; 2025 Building Permission System</p>
+  <p>Need help? <a routerLink="/support">Contact Support</a></p>
+</div>
