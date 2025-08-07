@@ -6,7 +6,39 @@
 
 .login-container {
   display: flex;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Card Styles */
+.login-card {
+  flex: 1;
+  max-width: 500px;
+  background: #ffffff;
+  padding: 3rem 4rem;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 10;
+  overflow-y: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+  .login-card {
+    max-width: 100%;
+    padding: 2.5rem 2rem;
+  }
+}
+
+/* Right Side - Illustration */
+.illustration-container {
+  flex: 1;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  display: flex;
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #dddddd 0%, #d3d3d3 100%);

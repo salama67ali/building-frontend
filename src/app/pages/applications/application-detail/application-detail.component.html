@@ -1,0 +1,129 @@
+<div class="application-detail-container" *ngIf="!isLoading; else loading">
+  <div class="header-actions">
+    <button mat-button routerLink="/applications">
+      <mat-icon>arrow_back</mat-icon> Back to Applications
+    </button>
+    <div class="spacer"></div>
+    <button mat-button color="primary" (click)="onEdit()" *ngIf="application?.status === 'draft'">
+      <mat-icon>edit</mat-icon> Edit
+    </button>
+    <button mat-button color="warn" (click)="onDelete()">
+      <mat-icon>delete</mat-icon> Delete
+    </button>
+  </div>
+
+  <mat-card class="application-card">
+    <mat-card-header>
+      <mat-card-title>
+        Application: {{ application?.reference }}
+        <span class="status-badge" [ngClass]="getStatusClass(application?.status || '')">
+          {{ getStatusLabel(application?.status || '') }}
+        </span>
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ application?.type }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+        <mat-tab label="Overview">
+          <div class="tab-content">
+            <div class="detail-row">
+              <div class="detail-item">
+                <h4>Reference Number</h4>
+                <p>{{ application?.reference }}</p>
+              </div>
+              <div class="detail-item">
+                <h4>Status</h4>
+                <span class="status-badge" [ngClass]="getStatusClass(application?.status || '')">
+                  {{ getStatusLabel(application?.status || '') }}
+                </span>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-item">
+                <h4>Submitted Date</h4>
+                <p>{{ application?.submittedDate | date:'mediumDate' }}</p>
+              </div>
+              <div class="detail-item">
+                <h4>Last Updated</h4>
+                <p>{{ application?.lastUpdated | date:'medium' }}</p>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <h4>Address</h4>
+              <p>{{ application?.address }}</p>
+            </div>
+
+            <div class="detail-item">
+              <h4>Description</h4>
+              <p>{{ application?.description || 'No description provided' }}</p>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Status History">
+          <div class="tab-content">
+            <mat-list>
+              <mat-list-item *ngFor="let status of application?.statusHistory" class="status-item">
+                <mat-icon matListIcon>history</mat-icon>
+                <div mat-line>
+                  <span class="status-badge" [ngClass]="getStatusClass(status.status)">
+                    {{ getStatusLabel(status.status) }}
+                  </span>
+                  <span class="status-date">{{ status.date | date:'medium' }}</span>
+                </div>
+                <p mat-line *ngIf="status.comments">{{ status.comments }}</p>
+              </mat-list-item>
+              <mat-list-item *ngIf="!application?.statusHistory?.length">
+                No status history available
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Documents">
+          <div class="tab-content">
+            <mat-list>
+              <mat-list-item *ngFor="let doc of application?.documents" class="document-item">
+                <mat-icon matListIcon>description</mat-icon>
+                <div mat-line>{{ doc.name }}</div>
+                <div mat-line>{{ doc.type }} • {{ doc.size }} • {{ doc.uploadedDate | date:'shortDate' }}</div>
+                <button mat-icon-button>
+                  <mat-icon>download</mat-icon>
+                </button>
+                <button mat-icon-button>
+                  <mat-icon>share</mat-icon>
+                </button>
+              </mat-list-item>
+              <mat-list-item *ngIf="!application?.documents?.length">
+                No documents uploaded
+              </mat-list-item>
+            </mat-list>
+
+            <div class="upload-section">
+              <button mat-stroked-button color="primary">
+                <mat-icon>upload</mat-icon> Upload Document
+              </button>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+
+    <mat-card-actions *ngIf="application?.status === 'draft'" align="end">
+      <button mat-button color="warn" (click)="onStatusChange('cancelled')">Cancel Application</button>
+      <button mat-raised-button color="primary" (click)="onStatusChange('submitted')">Submit for Review</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading application details...</p>
+  </div>
+</ng-template>

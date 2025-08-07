@@ -1,7 +1,24 @@
-// home.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../services/auth.service';
+
+interface FeatureCard {
+  icon: string;
+  title: string;
+  description: string;
+  link?: string;
+}
+
+interface Testimonial {
+  name: string;
+  role: string;
+  content: string;
+  avatar: string;
+}
 
 @Component({
   selector: 'app-home',
