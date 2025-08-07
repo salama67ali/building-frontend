@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="500" viewBox="0 0 600 500" fill="none">
+  <g clip-path="url(#clip0_1_2)">
+    <path d="M520 140H80C69 140 60 149 60 160V440C60 451 69 460 80 460H520C531 460 540 451 540 440V160C540 149 531 140 520 140Z" fill="#E6E6E6"/>
+    <path d="M500 180H100C94.5 180 90 184.5 90 190V410C90 415.5 94.5 420 100 420H500C505.5 420 510 415.5 510 410V190C510 184.5 505.5 180 500 180Z" fill="#FFFFFF"/>
+    <path d="M300 40L120 140H480L300 40Z" fill="#4F46E5"/>
+    <path d="M300 80L200 140H400L300 80Z" fill="#7C3AED"/>
+    <path d="M150 220H450V240H150V220Z" fill="#E6E6E6"/>
+    <path d="M150 260H350V280H150V260Z" fill="#E6E6E6"/>
+    <path d="M150 300H400V320H150V300Z" fill="#E6E6E6"/>
+    <path d="M150 340H300V360H150V340Z" fill="#E6E6E6"/>
+    <path d="M150 380H200V400H150V380Z" fill="#4F46E5"/>
+    <path d="M220 380H270V400H220V380Z" fill="#7C3AED"/>
+    <circle cx="450" cy="350" r="30" fill="#4F46E5"/>
+    <path d="M440 350L450 360L460 340" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_1_2">
+      <rect width="600" height="500" fill="white"/>
+    </clipPath>
+  </defs>
+</svg>
