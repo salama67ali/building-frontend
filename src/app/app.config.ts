@@ -2,7 +2,7 @@ import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { appRoutes } from './app.routes';
+import { routes } from './app.routes';
 
 // Material Modules
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -15,7 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(appRoutes),
+    provideRouter(routes),
     provideHttpClient(
       withInterceptors([])
     ),
