@@ -7,12 +7,7 @@ import { RouterModule } from '@angular/router';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  template: `
-    <div class="sidebar">
-      <button routerLink="/login">Login</button>
-      <button routerLink="/register">Register</button>
-    </div>
-    <router-outlet></router-outlet>
-  `
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {}
