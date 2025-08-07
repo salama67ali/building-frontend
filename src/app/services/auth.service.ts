@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 interface User {
+name: any;
   id: string;
   username: string;
   email: string;
@@ -43,7 +44,7 @@ interface ErrorResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = 'http://localhost:8050/api/auth';
   private userSubject: BehaviorSubject<User | null>;
   public user: Observable<User | null>;
 
