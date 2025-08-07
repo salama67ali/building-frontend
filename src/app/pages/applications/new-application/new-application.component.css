@@ -1,0 +1,154 @@
+/* New Application Component Styles */
+.new-application-container {
+  padding: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.header-actions h1 {
+  margin: 0;
+  color: #1a237e;
+  font-size: 1.75rem;
+  font-weight: 500;
+}
+
+mat-card {
+  margin-bottom: 2rem;
+}
+
+/* Form Styles */
+.form-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 250px;
+}
+
+/* Stepper Styles */
+mat-stepper {
+  background-color: transparent;
+}
+
+::ng-deep .mat-step-header .mat-step-icon-selected,
+::ng-deep .mat-step-header .mat-step-icon-state-done,
+::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: #1a237e;
+  color: white;
+}
+
+::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: #1a237e;
+}
+
+.stepper-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Button Styles */
+button[mat-button],
+button[mat-raised-button] {
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+button[mat-raised-button] {
+  padding: 0 2rem;
+}
+
+/* Form Field Styles */
+mat-form-field {
+  width: 100%;
+}
+
+textarea.mat-input-element {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-field {
+    width: 100%;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .stepper-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .stepper-actions button {
+    width: 100%;
+  }
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] {
+  .header-actions h1 {
+    color: #8e8eff;
+  }
+  
+  ::ng-deep .mat-step-header .mat-step-icon-selected,
+  ::ng-deep .mat-step-header .mat-step-icon-state-done,
+  ::ng-deep .mat-step-header .mat-step-icon-state-edit {
+    background-color: #8e8eff;
+    color: #1a1a1a;
+  }
+  
+  ::ng-deep .mat-step-header .mat-step-icon-state-edit {
+    background-color: #8e8eff;
+  }
+  
+  mat-stepper {
+    background-color: transparent;
+  }
+  
+  ::ng-deep .mat-step-header .mat-step-label {
+    color: #e0e0e0;
+  }
+  
+  ::ng-deep .mat-step-header .mat-step-icon {
+    background-color: #424242;
+    color: #e0e0e0;
+  }
+  
+  ::ng-deep .mat-step-header .mat-step-icon-selected {
+    background-color: #8e8eff;
+    color: #1a1a1a;
+  }
+  
+  ::ng-deep .mat-step-header .mat-step-icon-state-done {
+    background-color: #8e8eff;
+    color: #1a1a1a;
+  }
+  
+  ::ng-deep .mat-step-header .mat-step-icon-state-edit {
+    background-color: #8e8eff;
+    color: #1a1a1a;
+  }
+}

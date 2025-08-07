@@ -1,15 +1,29 @@
-// dashboard.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SidebarComponent],
   template: `
-    <h1>Welcome to the Dashboard</h1>
-    <button routerLink="/">Back to Home</button>
-  `
+    <div class="dashboard-layout">
+      <app-sidebar></app-sidebar>
+      <main class="dashboard-main-content">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  `,
+  styles: [`
+    .dashboard-layout {
+      display: flex;
+      height: 100vh;
+    }
+    .dashboard-main-content {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+  `]
 })
 export class DashboardComponent {}

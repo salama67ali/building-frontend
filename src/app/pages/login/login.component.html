@@ -1,45 +1,142 @@
-<div class="login-container">
-  <h2>Login to Your Account</h2>
+<div class="login-container" @fadeInOut>
+  <!-- Left Side: Login Form -->
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Welcome Back</mat-card-title>
+      <mat-card-subtitle>Sign in to your account to continue</mat-card-subtitle>
+    </mat-card-header>
 
-  
-<form>
-<div class="form-group">
-     <label for="fullName">Full Name</label>
-       <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
-     <div class="error-message" id="nameError">Please enter your full name</div>
-  </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" autocomplete="on">
+      <!-- Username/Email Field -->
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>Email or Username</mat-label>
+        <input 
+          matInput 
+          formControlName="username" 
+          placeholder="Enter your email or username"
+          autocomplete="username"
+          required
+        >
+        <mat-icon matPrefix>person_outline</mat-icon>
+        <mat-hint>Enter your registered email or username</mat-hint>
+        <mat-error *ngIf="username?.errors?.['required']">
+          <mat-icon class="error-icon">error_outline</mat-icon>
+          Email or username is required
+        </mat-error>
+        <mat-error *ngIf="username?.errors?.['email']">
+          <mat-icon class="error-icon">error_outline</mat-icon>
+          Please enter a valid email address
+        </mat-error>
+      </mat-form-field>
 
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" formControlName="password" required />
+      <!-- Password Field -->
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>Password</mat-label>
+        <input 
+          matInput 
+          [type]="hidePassword ? 'password' : 'text'" 
+          formControlName="password" 
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        >
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <button 
+          type="button" 
+          mat-icon-button 
+          matSuffix 
+          (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+          [attr.aria-pressed]="!hidePassword"
+          tabindex="-1"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-hint>At least 8 characters with a number and symbol</mat-hint>
+        <mat-error *ngIf="password?.errors?.['required']">
+          <mat-icon class="error-icon">error_outline</mat-icon>
+          Password is required
+        </mat-error>
+        <mat-error *ngIf="password?.errors?.['minlength']">
+          <mat-icon class="error-icon">error_outline</mat-icon>
+          Password must be at least 8 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" formControlName="rememberMe">
+          <span>Remember me</span>
+        </label>
+        <a routerLink="/forgot-password" class="forgot-password">
+          Forgot password?
+        </a>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-message" @fadeInOut>
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        class="login-button"
+        [disabled]="loginForm.invalid || isLoading"
+      >
+        <span *ngIf="!isLoading">Sign In</span>
+        <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+      </button>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <!-- Social Login Buttons -->
+      <div class="social-login">
+        <button 
+          type="button" 
+          mat-stroked-button 
+          color="primary" 
+          class="social-button google"
+          (click)="loginWithGoogle()"
+          [disabled]="isLoading"
+        >
+          <img src="assets/images/google-icon.svg" alt="Google" class="social-icon">
+          <span>Continue with Google</span>
+        </button>
+
+        <button 
+          type="button" 
+          mat-stroked-button 
+          color="primary" 
+          class="social-button microsoft"
+          (click)="loginWithMicrosoft()"
+          [disabled]="isLoading"
+        >
+          <img src="assets/images/microsoft-icon.svg" alt="Microsoft" class="social-icon">
+          <span>Continue with Microsoft</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Sign Up Link -->
+    <div class="signup-link" @fadeInOut>
+      <p>Don't have an account? <a routerLink="/register">Create one</a></p>
     </div>
+  </mat-card>
 
-    <button type="submit" [disabled]="loginForm.invalid">Login</button>
-  </form>
-
-  <div class="login-links">
-    <a routerLink="/forgot-password">Forgot Password?</a>
-    <span> | </span>
-    <a routerLink="/register">Register</a>
-  </div>
-
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="successMessage" class="success-message">
-    {{ successMessage }}
-  </div>
-
-  <div class="social-login">
-    <p>Or login with:</p>
-    <button (click)="loginWithGoogle()">Google</button>
-    <button (click)="loginWithFacebook()">Facebook</button>
-  </div>
-
-  <div class="login-footer">
-    <p>&copy; 2025 Building Permission System</p>
-    <p>Need help? <a routerLink="/support">Contact Support</a></p>
+  <!-- Illustration Section -->
+  <div class="illustration-container">
+    <img src="assets/images/login-illustration.svg" alt="Building Permissions" class="illustration">
+    <div class="illustration-overlay">
+      <h2>Building Permissions Made Simple</h2>
+      <p>Streamline your construction project approvals with our intuitive platform.</p>
+    </div>
   </div>
 </div>
-<app-navbar></app-navbar>

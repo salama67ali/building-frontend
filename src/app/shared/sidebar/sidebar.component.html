@@ -1,0 +1,107 @@
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <mat-icon class="logo-icon">account_balance</mat-icon>
+      <h2>BuildingPermit</h2>
+    </div>
+  </div>
+
+  <div *ngIf="isLoggedIn" class="user-info">
+    <div class="user-avatar">
+      <mat-icon>account_circle</mat-icon>
+    </div>
+    <div class="user-details">
+      <div class="user-name">{{ (userEmail ? userEmail.split('@')[0] : '') || 'User' }}</div>
+      <div class="user-role" [class]="'role-' + (userRole || 'guest')">
+        {{ (userRole || 'Guest') | titlecase }}
+      </div>
+    </div>
+  </div>
+  
+  <mat-divider *ngIf="isLoggedIn"></mat-divider>
+
+  <div class="menu-container">
+    <mat-nav-list>
+      <!-- Navigation Links -->
+      <ng-container *ngIf="!isLoggedIn">
+        <a mat-list-item routerLink="/login" routerLinkActive="active">
+          <mat-icon>login</mat-icon>
+          <span>Login</span>
+        </a>
+        <a mat-list-item routerLink="/register" routerLinkActive="active">
+          <mat-icon>person_add</mat-icon>
+          <span>Register</span>
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="isLoggedIn">
+        <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+          <mat-icon>dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+
+        <!-- Admin Specific Links -->
+        <ng-container *ngIf="userRole === 'admin'">
+          <a mat-list-item routerLink="/dashboard/admin" routerLinkActive="active">
+            <mat-icon>check_circle</mat-icon>
+            <span>Approve Projects</span>
+          </a>
+          <a mat-list-item routerLink="/admin/users" routerLinkActive="active">
+            <mat-icon>people</mat-icon>
+            <span>Manage Users</span>
+          </a>
+        </ng-container>
+
+        <!-- Owner Specific Links -->
+        <ng-container *ngIf="userRole === 'owner'">
+          <a mat-list-item routerLink="/dashboard/owner" routerLinkActive="active">
+          <mat-icon>add_circle</mat-icon>
+          <span>New Project</span>
+        </a>
+        <a mat-list-item routerLink="/my-applications" routerLinkActive="active">
+          <mat-icon>assignment</mat-icon>
+          <span>My Applications</span>
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="userRole === 'consultant'">
+        <a mat-list-item routerLink="/dashboard/consultant" routerLinkActive="active">
+          <mat-icon>support</mat-icon>
+          <span>Consultations</span>
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="userRole === 'engineer'">
+        <a mat-list-item routerLink="/dashboard/engineer" routerLinkActive="active">
+          <mat-icon>engineering</mat-icon>
+          <span>Projects</span>
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="userRole === 'GISA_assessment'">
+        <a mat-list-item routerLink="/dashboard/gisa-assessment" routerLinkActive="active">
+          <mat-icon>policy</mat-icon>
+          <span>Assessments</span>
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="userRole === 'government_boards'">
+        <a mat-list-item routerLink="/dashboard/government-boards" routerLinkActive="active">
+          <mat-icon>gavel</mat-icon>
+          <span>Board Reviews</span>
+        </a>
+      </ng-container>
+
+      <mat-divider></mat-divider>
+
+      <a mat-list-item routerLink="/profile" routerLinkActive="active">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </a>
+      <a mat-list-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </a>
+    </ng-container>
+  </mat-nav-list>
+</div>
