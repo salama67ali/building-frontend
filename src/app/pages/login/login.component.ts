@@ -1,81 +1,82 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { fadeInOut, slideIn } from '../../shared/animations/animations';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  selector: 'app-login',
+  template: `
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+      <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg">
+        <h2 class="text-3xl font-bold text-center text-gray-900">Sign in to your account</h2>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+          <div class="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label for="username" class="sr-only">Username</label>
+              <input formControlName="username" id="username" name="username" type="text" autocomplete="username" required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Username">
+            </div>
+            <div>
+              <label for="password" class="sr-only">Password</label>
+              <input formControlName="password" id="password" name="password" type="password" autocomplete="current-password" required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Password">
+            </div>
+          </div>
+          <div *ngIf="errorMessage" class="text-red-500 text-sm text-center">
+            {{ errorMessage }}
+          </div>
+          <div>
+            <button type="submit" [disabled]="loginForm.invalid"
+              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Sign in
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `,
+  styles: [],
+  imports: [CommonModule, ReactiveFormsModule]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
+  // We use the inject() function for dependency injection in standalone components
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+
   loginForm: FormGroup;
-  showPassword = false;
-  isLoading = false;
-  errorMessage = '';
+  errorMessage: string = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
+    // Initialize the form with validators
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
+      username: ['', Validators.required],
+      password: ['', Validators.required],
     });
   }
 
-  ngOnInit(): void {
-    
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.markFormGroupTouched();
-      return;
-    }
-
-    this.isLoading = true;
+  onSubmit() {
     this.errorMessage = '';
-
-    // Simulate API call
-    setTimeout(() => {
-      const { username, password, rememberMe } = this.loginForm.value;
-      
-      // Mock authentication logic
-      if (username === 'admin' && password === 'password123') {
-        console.log('Login successful', { username, rememberMe });
-        // Handle successful login (redirect, store token, etc.)
-      } else {
-        this.errorMessage = 'Invalid username or password. Please try again.';
-      }
-      
-      this.isLoading = false;
-    }, 1500);
-  }
-
-  loginWithGoogle(): void {
-    console.log('Google login initiated');
-    // Implement Google OAuth login
-  }
-
-  private markFormGroupTouched(): void {
-    Object.keys(this.loginForm.controls).forEach(key => {
-      const control = this.loginForm.get(key);
-      control?.markAsTouched();
-    });
+    if (this.loginForm.valid) {
+      this.authService.login(this.loginForm.value).subscribe({
+        next: (response) => {
+          console.log('Login successful');
+          // Navigate to the user's dashboard based on their role
+          const userRole = response.user.role;
+          if (userRole === 'admin' || userRole === 'government-board') {
+            this.router.navigate(['/admin-dashboard']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        },
+        error: (err) => {
+          this.errorMessage = 'Invalid username or password.';
+        }
+      });
+    }
   }
 }

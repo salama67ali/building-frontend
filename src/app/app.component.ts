@@ -1,129 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router';
-import { SidebarComponent } from './shared/sidebar/sidebar.component';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { RouterOutlet, RouterLink } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 
 @Component({
-  selector: 'app-root',
   standalone: true,
+  selector: 'app-root',
   imports: [
     CommonModule,
-    RouterModule,
     RouterOutlet,
-    SidebarComponent,
-    MatSidenavModule,
-    MatToolbarModule,
+    RouterLink,
+    MatButtonModule,
     MatIconModule,
-    MatButtonModule
+    MatCardModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    MatListModule
   ],
   template: `
-    <div class="app-container">
-      <mat-sidenav-container class="sidenav-container">
-        <mat-sidenav #sidenav mode="side" [opened]="isSidebarOpen" class="sidenav">
-          <app-sidebar (navigate)="sidenav.toggle()"></app-sidebar>
-        </mat-sidenav>
-        
-        <mat-sidenav-content class="content">
-          <mat-toolbar color="primary" class="toolbar">
-            <button mat-icon-button (click)="sidenav.toggle()" class="menu-button">
-              <mat-icon>menu</mat-icon>
-            </button>
-            <span class="toolbar-title">Building Permission System</span>
-            <span class="spacer"></span>
-            <div *ngIf="(authService.user | async) as user" class="user-info">
-              <mat-icon>account_circle</mat-icon>
-              <span>{{ user.name }}</span>
-            </div>
-          </mat-toolbar>
-          
-          <div class="router-outlet-container">
-            <router-outlet></router-outlet>
-          </div>
-        </mat-sidenav-content>
-      </mat-sidenav-container>
-    </div>
+    <nav class="bg-gray-800 p-4 text-white flex justify-between items-center">
+      <div class="flex space-x-4">
+        <a routerLink="/" class="hover:text-gray-300">Home</a>
+        <a *ngIf="!authService.isAuthenticated()" routerLink="/login" class="hover:text-gray-300">Login</a>
+        <a *ngIf="!authService.isAuthenticated()" routerLink="/register" class="hover:text-gray-300">Register</a>
+      </div>
+      <div *ngIf="authService.isAuthenticated()" class="flex items-center space-x-4">
+        <span class="text-sm">Welcome, {{ authService.currentUserValue?.username }}</span>
+        <button (click)="authService.logout()" class="px-3 py-1 bg-red-600 rounded hover:bg-red-700">Logout</button>
+      </div>
+    </nav>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
   `,
-  styles: [`
-    .app-container {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
-    
-    .sidenav-container {
-      height: 100%;
-    }
-    
-    .sidenav {
-      width: 250px;
-      box-shadow: 3px 0 6px rgba(0,0,0,0.24);
-    }
-    
-    .content {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-    
-    .toolbar {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-    
-    .toolbar-title {
-      margin-left: 8px;
-    }
-    
-    .spacer {
-      flex: 1 1 auto;
-    }
-    
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-right: 8px;
-    }
-    
-    .router-outlet-container {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    
-    @media (max-width: 768px) {
-      .sidenav {
-        width: 200px;
-      }
-      
-      .router-outlet-container {
-        padding: 10px;
-      }
-    }
-  `]
+  styles: []
 })
-export class AppComponent implements OnInit {
-  isSidebarOpen = true;
-
-  constructor(public authService: AuthService) {}
-
-  ngOnInit() {
-    // Responsive sidebar
-    this.updateSidebarState();
-    window.addEventListener('resize', () => this.updateSidebarState());
-
-    this.authService.user.subscribe();
-  }
-
-  private updateSidebarState() {
-    this.isSidebarOpen = window.innerWidth > 768;
-  }
+export class AppComponent {
+  authService = inject(AuthService);
 }

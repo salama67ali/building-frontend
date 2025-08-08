@@ -1,108 +1,115 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { User } from '../models/user.model';
+import { AuthResponse } from '../models/authService.model'; // Assuming you have this model defined
 
-interface User {
-name: any;
-  id: string;
+// The conflicting import has been removed. The interfaces are now defined correctly here.
+// You would use these same interfaces if you create a separate models.ts file later.
+export interface User {
+  id: number;
   username: string;
   email: string;
-  role: string;
+  role: 'client' | 'consultant' | 'engineer' | 'government-board' | 'admin';
   token: string;
-  firstName?: string;
-  lastName?: string;
-  fullName?: string;
-  phone?: string;
-  avatar?: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
-interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-  role: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-}
-
-interface LoginResponse {
+export interface AuthResponse {
   user: User;
   token: string;
-}
-
-interface ErrorResponse {
-  message: string;
-  error?: any;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  // Updated apiUrl to match the one you provided.
   private apiUrl = 'http://localhost:8050/api/auth';
-  private userSubject: BehaviorSubject<User | null>;
-  public user: Observable<User | null>;
-
+  private currentUserSubject: BehaviorSubject<User | null>;
+  public currentUser: Observable<User | null>;
   constructor(private http: HttpClient, private router: Router) {
-    const user = localStorage.getItem('user');
-    this.userSubject = new BehaviorSubject<User | null>(user ? JSON.parse(user) : null);
-    this.user = this.userSubject.asObservable();
-  }
-
-  public get userValue(): User | null {
-    return this.userSubject.value;
-  }
-
-  get isLoggedIn(): boolean {
-    return !!this.userValue;
-  }
-
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }).pipe(
-      tap((response) => {
-        localStorage.setItem('user', JSON.stringify(response.user));
-        localStorage.setItem('token', response.token);
-        this.userSubject.next(response.user);
-      }),
-      catchError((error) => {
-        console.error('Login error:', error);
-        return throwError(() => new Error('Invalid username or password'));
-      })
+    const storedUser = localStorage.getItem('currentUser');
+    this.currentUserSubject = new BehaviorSubject<User | null>(
+      storedUser ? JSON.parse(storedUser) : null
     );
+    this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  register(userData: RegisterData): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/register`, userData).pipe(
-      catchError((error) => {
-        console.error('Registration error:', error);
-        return throwError(() => new Error('Registration failed. Please try again.'));
-      })
-    );
+  get currentUserValue(): User | null {
+    return this.currentUserSubject.value;
   }
 
-  getLoggedInUser(): User | null {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+  register(userData: any): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/register`, userData)
+      .pipe(
+        tap(response => {
+          console.log('Registration successful:', response);
+        }),
+        catchError(error => {
+          console.error('Registration failed:', error);
+          return throwError(() => new Error('Registration failed. Please try again.'));
+        })
+      );
+  }
+
+  login(credentials: any): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/login`, credentials)
+      .pipe(
+        tap(response => {
+          const { user } = response;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          this.currentUserSubject.next(user);
+          console.log('Login successful:', user);
+
+          // Redirect to the user's dashboard based on their role
+          const userRole = user.role;
+          if (userRole === 'admin' || userRole === 'government-board') {
+            this.router.navigate(['/admin-dashboard']);
+          } else if (['client', 'consultant', 'engineer'].includes(userRole)) {
+            this.router.navigate(['/dashboard']);
+          } else {
+            console.error('Unknown user role:', userRole);
+            // Handle unknown user role
+          }
+        }),
+        catchError(error => {
+          console.error('Login failed:', error);
+          return throwError(() => new Error('Login failed. Invalid credentials.'));
+        })
+      );
   }
 
   logout(): void {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    this.userSubject.next(null);
+    localStorage.removeItem('currentUser');
+    this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  isAuthenticated(): boolean {
+    return this.currentUserSubject.value !== null;
   }
 
-  hasRole(role: string): boolean {
-    const user = this.userValue;
-    return user?.role === role;
+  hasRole(requiredRoles: string[]): boolean {
+    if (!Array.isArray(requiredRoles)) {
+      console.error('Required roles must be an array:', requiredRoles);
+      return false;
+    }
+    const user = this.currentUserSubject.value;
+    if (!user) {
+      return false;
+    }
+    return requiredRoles.includes(user.role);
+  }
+
+  // This is a placeholder for a real API call to update user data.
+  // In a real application, you would send a PATCH or PUT request to your backend.
+  updateProfile(userData: Partial<User>): Observable<any> {
+    // Replace this with a real API call
+    console.log('Updating profile for user:', userData);
+    return this.http.patch(`${this.apiUrl}/update-profile`, userData);
   }
 }

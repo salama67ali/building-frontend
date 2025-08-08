@@ -1,162 +1,93 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { first } from 'rxjs/operators';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatIconModule } from '@angular/material/icon';
-import { trigger, state, style, animate, transition } from '@angular/animations';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-register',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatIconModule
-  ],
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
-  animations: [
-    trigger('fadeInOut', [
-      state('void', style({ opacity: 0 })),
-      transition(':enter, :leave', [
-        animate(300)
-      ])
-    ]),
-    trigger('slideIn', [
-      transition(':enter', [
-        style({ transform: 'translateY(20px)', opacity: 0 }),
-        animate('300ms ease-out', style({ transform: 'translateY(0)', opacity: 1 }))
-      ])
-    ])
-  ]
+  selector: 'app-register',
+  template: `
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+      <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg">
+        <h2 class="text-3xl font-bold text-center text-gray-900">Create a new account</h2>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+          <div class="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label for="username" class="sr-only">Username</label>
+              <input formControlName="username" id="username" name="username" type="text" autocomplete="username" required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Username">
+            </div>
+            <div>
+              <label for="email" class="sr-only">Email address</label>
+              <input formControlName="email" id="email" name="email" type="email" autocomplete="email" required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Email address">
+            </div>
+            <div>
+              <label for="password" class="sr-only">Password</label>
+              <input formControlName="password" id="password" name="password" type="password" autocomplete="new-password" required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Password">
+            </div>
+            <div>
+              <label for="role" class="sr-only">Role</label>
+              <select formControlName="role" id="role" name="role" required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm">
+                <option value="" disabled>Select Role</option>
+                <option value="client">Client</option>
+                <option value="consultant">Consultant</option>
+                <option value="engineer">Engineer</option>
+                <option value="government-board">Government Board</option>
+              </select>
+            </div>
+          </div>
+          <div *ngIf="errorMessage" class="text-red-500 text-sm text-center">
+            {{ errorMessage }}
+          </div>
+          <div>
+            <button type="submit" [disabled]="registerForm.invalid"
+              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Register
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `,
+  styles: [],
+  imports: [CommonModule, ReactiveFormsModule]
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+
   registerForm: FormGroup;
-  isLoading = false;
-  errorMessage = '';
-  successMessage = '';
-  hidePassword = true;
-  hideConfirmPassword = true;
-  roles = [
-    { value: 'ENGINEER', viewValue: 'Engineer' },
-    { value: 'CONSULTANT', viewValue: 'Consultant' },
-    { value: 'OWNER', viewValue: 'Property Owner' },
-    { value: 'GOVERNMENT', viewValue: 'Government Official' }
-  ];
-  
-  // Form control getters for template
-  get formControls() {
-    return this.registerForm.controls;
-  }
+  errorMessage: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private snackBar: MatSnackBar
-  ) {
+  constructor() {
     this.registerForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(4)]],
+      username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
-      role: ['', Validators.required],
-      firstName: ['', Validators.required],
-      lastName: [''],
-      phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
-    }, { validators: [this.passwordMatchValidator] });
+      password: ['', Validators.required],
+      role: ['', Validators.required]
+    });
   }
 
-  ngOnInit(): void {
-    // If user is already logged in, redirect to dashboard
-    if (this.authService.isLoggedIn) {
-      this.router.navigate(['/dashboard']);
-    }
-  }
-
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password');
-    const confirmPassword = control.get('confirmPassword');
-    
-    if (password && confirmPassword && password.value !== confirmPassword.value) {
-      confirmPassword.setErrors({ mismatch: true });
-      return { mismatch: true };
-    }
-    return null;
-  }
-
-  onSubmit(): void {
-    if (this.registerForm.invalid || this.isLoading) {
-      return;
-    }
-
-    this.isLoading = true;
+  onSubmit() {
     this.errorMessage = '';
-    this.successMessage = '';
-
-    const formValue = this.registerForm.value;
-    const userData = {
-      username: formValue.username,
-      email: formValue.email,
-      password: formValue.password,
-      role: formValue.role,
-      firstName: formValue.firstName,
-      lastName: formValue.lastName || '',
-      phone: formValue.phone
-    };
-
-    this.authService.register(userData)
-      .pipe(first())
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.successMessage = 'Registration successful! Redirecting to login...';
-          
-          this.snackBar.open('Registration successful! Please log in.', 'Close', {
-            duration: 5000,
-            panelClass: ['success-snackbar']
-          });
-          
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
+    if (this.registerForm.valid) {
+      this.authService.register(this.registerForm.value).subscribe({
+        next: (response) => {
+          console.log('Registration successful:', response);
+          this.router.navigate(['/login']); // Redirect to login page on success
         },
-        error: (error) => {
-          this.isLoading = false;
-          this.errorMessage = error.message || 'Registration failed. Please try again.';
-          this.snackBar.open(this.errorMessage, 'Close', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+        error: (err) => {
+          this.errorMessage = 'Registration failed. Please check your data.';
         }
       });
+    }
   }
-
-  // Individual form control getters for template
-  get username() { return this.registerForm.get('username'); }
-  get email() { return this.registerForm.get('email'); }
-  get password() { return this.registerForm.get('password'); }
-  get confirmPassword() { return this.registerForm.get('confirmPassword'); }
-  get role() { return this.registerForm.get('role'); }
-  get firstName() { return this.registerForm.get('firstName'); }
-  get lastName() { return this.registerForm.get('lastName'); }
-  get phone() { return this.registerForm.get('phone'); }
 }

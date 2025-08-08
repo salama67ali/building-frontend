@@ -2,14 +2,18 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
+// In modern Angular, guards are functional. This is the correct way
+// to define a guard for standalone components.
+export const AuthGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.getLoggedInUser()) {
+  // Check if the user is authenticated
+  if (authService.isAuthenticated()) {
     return true;
   }
 
-  // Redirect to the login page
-  return router.parseUrl('/login');
+  // If not, redirect to the login page
+  router.navigate(['/login']);
+  return false;
 };

@@ -1,7 +1,11 @@
+// user.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User } from '../models/user.model';
+import { UserProfile, UserProfileListResponse, UserProfileResponse } from '../models/user.model';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { UserProfileCreate, UserProfileUpdate } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -9,33 +13,34 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  getUsersByRole(role: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.baseUrl}/role/${role}`);
+  getUsersByRole(role: string): Observable<UserProfile[]> {
+    return this.http.get<UserProfile[]>(`${this.baseUrl}/role/${role}`).pipe(
+      catchError(this.handleError)
+    );
   }
-}
-export interface UserProfileResponse {
-  user: UserProfile;
-}
-export interface UserProfile {
-  userId: number;
-  name: string;
-  email: string;
-  role: 'OWNER' | 'CONSULTANT' | 'ENGINEER' | 'BOARD' | 'ADMIN';
-}
-export interface UserProfileListResponse {
-  users: UserProfile[];
-}
-export interface UserProfileCreate {
-  name: string;
-  email: string;
-  role: 'OWNER' | 'CONSULTANT' | 'ENGINEER' | 'BOARD' | 'ADMIN';
-}
-export interface UserProfileUpdate {
-  userId: number;
-  name?: string;
-  email?: string;
-  role?: 'OWNER' | 'CONSULTANT' | 'ENGINEER' | 'BOARD' | 'ADMIN';
-}
-export interface UserProfileDelete {
-  userId: number;
+
+  getAllUsers(): Observable<UserProfile[]> {
+    return this.http.get<UserProfile[]>(this.baseUrl);
+  }
+
+  getUserById(id: number): Observable<UserProfileResponse> {
+    return this.http.get<UserProfileResponse>(`${this.baseUrl}/${id}`);
+  }
+
+  createUser(user: UserProfileCreate): Observable<UserProfile> {
+    return this.http.post<UserProfile>(this.baseUrl, user);
+  }
+
+  updateUser(user: UserProfileUpdate): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${this.baseUrl}/${user.userId}`, user);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  private handleError(error: any): Observable<never> {
+    console.error('An error occurred:', error);
+    return throwError(() => new Error('Something went wrong. Please try again.'));
+  }
 }

@@ -1,101 +1,43 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-home',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule
-  ],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  selector: 'app-home',
+  imports: [CommonModule, RouterLink],
+  template: `
+    <div class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      <div class="w-full max-w-2xl p-8 text-center bg-white rounded-xl shadow-lg">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
+          Welcome to the Building Permissions Management System
+        </h1>
+        
+        <p class="text-lg text-gray-600 mb-8">
+          {{ authService.isAuthenticated() ? 'You are logged in.' : 'Please log in or register to get started.' }}
+        </p>
+        
+        <!-- Conditional rendering of links based on authentication status -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <a *ngIf="!authService.isAuthenticated()" routerLink="/login" 
+            class="px-6 py-3 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+            Log In
+          </a>
+          <a *ngIf="!authService.isAuthenticated()" routerLink="/register" 
+            class="px-6 py-3 text-lg font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-100 transition-colors duration-200">
+            Register
+          </a>
+          <a *ngIf="authService.isAuthenticated()" routerLink="/dashboard"
+            class="px-6 py-3 text-lg font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors duration-200">
+            Go to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: []
 })
-export class HomeComponent implements OnInit {
-  isLoggedIn = false;
-  userName = '';
-  
-  features = [
-    {
-      icon: 'speed',
-      title: 'Fast Processing',
-      description: 'Get your building permissions processed quickly and efficiently.',
-      link: '/features/fast-processing'
-    },
-    {
-      icon: 'security',
-      title: 'Secure Platform',
-      description: 'Your data is protected with enterprise-grade security.',
-      link: '/features/security'
-    },
-    {
-      icon: 'insights',
-      title: 'Real-time Tracking',
-      description: 'Track your application status in real-time.',
-      link: '/features/tracking'
-    },
-    {
-      icon: 'support_agent',
-      title: '24/7 Support',
-      description: 'Our support team is always available to help you.',
-      link: '/features/support'
-    }
-  ];
-
-  testimonials = [
-    {
-      name: 'Sarah Johnson',
-      role: 'Architect',
-      content: 'This platform has revolutionized how I handle building permissions. The process is now seamless and transparent.',
-      avatar: 'assets/images/testimonials/avatar1.jpg'
-    },
-    {
-      name: 'Michael Chen',
-      role: 'Construction Manager',
-      content: 'The real-time tracking feature has saved us countless hours of follow-up calls and emails.',
-      avatar: 'assets/images/testimonials/avatar2.jpg'
-    },
-    {
-      name: 'Emma Rodriguez',
-      role: 'Property Developer',
-      content: 'As someone who manages multiple projects simultaneously, this platform has been a game-changer for our workflow.',
-      avatar: 'assets/images/testimonials/avatar3.jpg'
-    }
-  ];
-
-  constructor(private authService: AuthService, private router: Router) {}
-
-  ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn;
-    if (this.isLoggedIn) {
-      const user = this.authService.getLoggedInUser();
-      if (user) {
-        this.userName = user.name || user.username || '';
-      }
-    }
-  }
-
-  getGreeting(): string {
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      return 'Good Morning';
-    } else if (hour < 18) {
-      return 'Good Afternoon';
-    } else {
-      return 'Good Evening';
-    }
-  }
-
-  getDashboardLink(): string {
-    // This could be more sophisticated based on user role
-    return '/dashboard';
-  }
+export class HomeComponent {
+  authService = inject(AuthService); // Inject the service to check auth state
 }
