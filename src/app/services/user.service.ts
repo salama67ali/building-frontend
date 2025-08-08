@@ -1,17 +1,20 @@
-// user.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { UserProfile, UserProfileListResponse, UserProfileResponse } from '../models/user.model';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
-import { UserProfileCreate, UserProfileUpdate } from '../models/user.model';
+import { UserProfile, UserProfileListResponse, UserProfileResponse, UserProfileCreate, UserProfileUpdate } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private baseUrl = 'http://localhost:8050/api/users';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
+
+  createUser(user: UserProfileCreate): Observable<UserProfile> {
+    return this.http.post<UserProfile>(this.baseUrl, user).pipe(
+      catchError(this.handleError)
+    );
+  }
 
   getUsersByRole(role: string): Observable<UserProfile[]> {
     return this.http.get<UserProfile[]>(`${this.baseUrl}/role/${role}`).pipe(
@@ -27,8 +30,8 @@ export class UserService {
     return this.http.get<UserProfileResponse>(`${this.baseUrl}/${id}`);
   }
 
-  createUser(user: UserProfileCreate): Observable<UserProfile> {
-    return this.http.post<UserProfile>(this.baseUrl, user);
+  getUserList(): Observable<UserProfileListResponse> {
+    return this.http.get<UserProfileListResponse>(this.baseUrl);
   }
 
   updateUser(user: UserProfileUpdate): Observable<UserProfile> {
